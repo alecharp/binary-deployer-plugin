@@ -24,10 +24,8 @@
 
 package org.jenkinsci.plugins.binarydeployer;
 
-import hudson.FilePath;
 import hudson.model.AbstractDescribableImpl;
-
-import java.util.List;
+import jenkins.util.VirtualFile;
 
 /**
  * @author Adrien Lecharpentier
@@ -39,7 +37,7 @@ public abstract class Repository extends AbstractDescribableImpl<Repository> {
      *
      * @param files list of {@see FilePath} to deploy
      */
-    abstract void deploy(List<FilePath> files);
+    abstract void deploy(VirtualFile[] files);
 
     @Override
     public RepositoryDescriptor getDescriptor() {
