@@ -46,7 +46,7 @@ public class BinaryDeployerRecorder extends Recorder {
     private final Repository repository;
 
     @DataBoundConstructor
-    public BinaryDeployerRecorder(HTTPRepository repository) {
+    public BinaryDeployerRecorder(Repository repository) {
         this.repository = repository;
     }
 
