@@ -36,14 +36,18 @@ import hudson.tasks.Recorder;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Adrien Lecharpentier
  */
 public class BinaryDeployerRecorder extends Recorder {
 
+    private final Repository repository;
+
     @DataBoundConstructor
-    public BinaryDeployerRecorder() {
+    public BinaryDeployerRecorder(HTTPRepository repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -57,6 +61,10 @@ public class BinaryDeployerRecorder extends Recorder {
         return true;
     }
 
+    public Repository getRepository() {
+        return repository;
+    }
+
     @Extension
     public static final class BinaryDeployerDescriptor extends BuildStepDescriptor<Publisher> {
         @Override
@@ -67,6 +75,10 @@ public class BinaryDeployerRecorder extends Recorder {
         @Override
         public String getDisplayName() {
             return Messages.binarydeployer_displayName();
+        }
+
+        public List<RepositoryDescriptor> getRepositoryDescriptors() {
+            return RepositoryDescriptor.all();
         }
     }
 }
