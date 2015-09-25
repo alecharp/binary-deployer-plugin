@@ -22,27 +22,10 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.binarydeployer;
+package org.jenkinsci.plugins.binarydeployer.HTTPRepository
 
-import hudson.model.AbstractDescribableImpl;
-import jenkins.util.VirtualFile;
+f = namespace(lib.FormTagLib)
 
-import java.io.IOException;
-
-/**
- * @author Adrien Lecharpentier
- */
-public abstract class Repository extends AbstractDescribableImpl<Repository> {
-
-    /**
-     * Deploys files to the selected (current implementation) {@see Repository}
-     *
-     * @param files list of {@see FilePath} to deploy
-     */
-    abstract void deploy(VirtualFile[] files) throws IOException;
-
-    @Override
-    public RepositoryDescriptor getDescriptor() {
-        return (RepositoryDescriptor) super.getDescriptor();
-    }
+f.entry(title: _("URI"), field: "remoteLocation") {
+    f.textbox();
 }
