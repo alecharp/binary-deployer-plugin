@@ -24,20 +24,30 @@
 
 package org.jenkinsci.plugins.binarydeployer;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardUsernameListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.model.ItemGroup;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import jenkins.util.VirtualFile;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -48,15 +58,21 @@ public class HttpRepository extends Repository {
     private static final Logger log = Logger.getLogger(HttpRepository.class.getCanonicalName());
 
     private final String remoteLocation;
+    private final String credentialsId;
 
     @DataBoundConstructor
-    public HttpRepository(String remoteLocation) {
+    public HttpRepository(String remoteLocation, String credentialsId) {
         if (!remoteLocation.endsWith("/")) remoteLocation += "/";
         this.remoteLocation = remoteLocation;
+        this.credentialsId = credentialsId;
     }
 
     public String getRemoteLocation() {
         return remoteLocation;
+    }
+
+    public String getCredentialsId() {
+        return credentialsId;
     }
 
     @Override
@@ -100,6 +116,12 @@ public class HttpRepository extends Repository {
             } catch (URISyntaxException e) {
                 return FormValidation.error(Messages.binarydeployer_httprepository_invalidURI());
             }
+        }
+
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup context) {
+            List<StandardUsernamePasswordCredentials> credentials = CredentialsProvider.lookupCredentials(
+                StandardUsernamePasswordCredentials.class, context, ACL.SYSTEM, Lists.<DomainRequirement>newArrayList());
+            return new StandardUsernameListBoxModel().withEmptySelection().withAll(credentials);
         }
     }
 }
