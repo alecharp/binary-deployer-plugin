@@ -27,17 +27,25 @@ package org.jenkinsci.plugins.binarydeployer;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.util.VirtualFile;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 
 /**
  * @author Adrien Lecharpentier
  */
 public class HTTPRepository extends Repository {
+
+    private static final Logger log = Logger.getLogger(HTTPRepository.class.getCanonicalName());
 
     private final String remoteLocation;
 
@@ -53,6 +61,29 @@ public class HTTPRepository extends Repository {
 
     @Override
     void deploy(VirtualFile[] files) throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+
+        for (VirtualFile file : files) {
+            InputStreamEntity entity = new InputStreamEntity(file.open(), file.length());
+            HttpPost post = new HttpPost(remoteLocation + file.getName());
+            post.setEntity(entity);
+
+            CloseableHttpResponse response = null;
+            try {
+                response = client.execute(post);
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode >= 200 && statusCode < 300) {
+                    log.fine("Deployed " + file.getName() + " to " + remoteLocation);
+                } else {
+                    log.warning("Cannot deploy file " + file.getName() + ". Response from target was " + statusCode);
+                    throw new IOException(response.getStatusLine().toString());
+                }
+            } finally {
+                if (response != null) {
+                    response.close();
+                }
+            }
+        }
     }
 
     @Extension
