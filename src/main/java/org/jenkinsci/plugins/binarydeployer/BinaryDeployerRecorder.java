@@ -61,7 +61,7 @@ public class BinaryDeployerRecorder extends Recorder {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
         throws InterruptedException, IOException {
-        listener.getLogger().append("Deploying files");
+        listener.getLogger().println("Deploying files");
         VirtualFile[] filesToDeploy = build.pickArtifactManager().root().list();
         if (log.isLoggable(Level.FINE)) {
             log.fine("Will deploy " + filesToDeploy.length + " files to the repository");
