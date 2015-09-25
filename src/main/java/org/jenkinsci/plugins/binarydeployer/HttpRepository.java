@@ -31,6 +31,7 @@ import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.ItemGroup;
+import hudson.model.Run;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -76,8 +77,8 @@ public class HttpRepository extends Repository {
     }
 
     @Override
-    void deploy(VirtualFile[] files) throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
+    void deploy(VirtualFile[] files, Run run) throws IOException {
 
         for (VirtualFile file : files) {
             InputStreamEntity entity = new InputStreamEntity(file.open(), file.length());

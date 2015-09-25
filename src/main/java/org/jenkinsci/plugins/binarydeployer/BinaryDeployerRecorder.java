@@ -69,7 +69,7 @@ public class BinaryDeployerRecorder extends Recorder {
                 log.fine(virtualFile.getName());
             }
         }
-        repository.deploy(filesToDeploy);
+        repository.deploy(filesToDeploy, build);
         return true;
     }
 

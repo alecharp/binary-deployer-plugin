@@ -25,6 +25,7 @@
 package org.jenkinsci.plugins.binarydeployer;
 
 import hudson.model.AbstractDescribableImpl;
+import hudson.model.Run;
 import jenkins.util.VirtualFile;
 
 import java.io.IOException;
@@ -38,8 +39,9 @@ public abstract class Repository extends AbstractDescribableImpl<Repository> {
      * Deploys files to the selected (current implementation) {@see Repository}
      *
      * @param files list of {@see FilePath} to deploy
+     * @param run the context in which the deploy is taking place
      */
-    abstract void deploy(VirtualFile[] files) throws IOException;
+    abstract void deploy(VirtualFile[] files, Run run) throws IOException;
 
     @Override
     public RepositoryDescriptor getDescriptor() {
