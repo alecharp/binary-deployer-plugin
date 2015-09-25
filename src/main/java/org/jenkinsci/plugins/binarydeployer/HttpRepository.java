@@ -31,15 +31,21 @@ import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.ItemGroup;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.util.VirtualFile;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -77,28 +83,51 @@ public class HttpRepository extends Repository {
     }
 
     @Override
-        CloseableHttpClient client = HttpClients.createDefault();
     void deploy(VirtualFile[] files, Run run) throws IOException {
+        CloseableHttpClient client = null;
+        try {
+            if (credentialsId == null || credentialsId.isEmpty()) {
+                client = HttpClients.createDefault();
+            } else {
+                BasicCredentialsProvider credentials = new BasicCredentialsProvider();
+                StandardUsernamePasswordCredentials credentialById = CredentialsProvider.findCredentialById(credentialsId,
+                    StandardUsernamePasswordCredentials.class, run, Lists.<DomainRequirement>newArrayList());
+                credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(
+                    credentialById.getUsername(), credentialById.getPassword().getPlainText()
+                ));
 
-        for (VirtualFile file : files) {
-            InputStreamEntity entity = new InputStreamEntity(file.open(), file.length());
-            HttpPost post = new HttpPost(remoteLocation + file.getName());
-            post.setEntity(entity);
+                client = HttpClients.custom()
+                    .setDefaultCredentialsProvider(credentials)
+                    .disableAutomaticRetries()
+                    .setRetryHandler(new DefaultHttpRequestRetryHandler(0, false))
+                    .build();
+            }
 
-            CloseableHttpResponse response = null;
-            try {
-                response = client.execute(post);
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode >= 200 && statusCode < 300) {
-                    log.fine("Deployed " + file.getName() + " to " + remoteLocation);
-                } else {
-                    log.warning("Cannot deploy file " + file.getName() + ". Response from target was " + statusCode);
-                    throw new IOException(response.getStatusLine().toString());
+            for (VirtualFile file : files) {
+                BufferedHttpEntity entity = new BufferedHttpEntity(new InputStreamEntity(file.open(), file.length()));
+                HttpPost post = new HttpPost(remoteLocation + file.getName());
+                post.setEntity(entity);
+
+                CloseableHttpResponse response = null;
+                try {
+                    response = client.execute(post);
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode >= 200 && statusCode < 300) {
+                        log.fine("Deployed " + file.getName() + " to " + remoteLocation);
+                    } else {
+                        log.warning("Cannot deploy file " + file.getName() + ". Response from target was " + statusCode);
+                        run.setResult(Result.FAILURE);
+                        throw new IOException(response.getStatusLine().toString());
+                    }
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
                 }
-            } finally {
-                if (response != null) {
-                    response.close();
-                }
+            }
+        } finally {
+            if (client != null) {
+                client.close();
             }
         }
     }
