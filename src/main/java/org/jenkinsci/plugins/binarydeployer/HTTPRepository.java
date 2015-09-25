@@ -39,14 +39,15 @@ import java.net.URISyntaxException;
  */
 public class HTTPRepository extends Repository {
 
-    private final URI remoteLocation;
+    private final String remoteLocation;
 
     @DataBoundConstructor
-    public HTTPRepository(String remoteLocation) throws URISyntaxException {
-        this.remoteLocation = URI.create(remoteLocation);
+    public HTTPRepository(String remoteLocation) {
+        if (!remoteLocation.endsWith("/")) remoteLocation += "/";
+        this.remoteLocation = remoteLocation;
     }
 
-    public URI getRemoteLocation() {
+    public String getRemoteLocation() {
         return remoteLocation;
     }
 
