@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.binarydeployer.HTTPRepository
+package org.jenkinsci.plugins.binarydeployer.HttpRepository
 
 f = namespace(lib.FormTagLib)
 

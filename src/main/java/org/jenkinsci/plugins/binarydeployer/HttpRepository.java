@@ -43,14 +43,14 @@ import java.util.logging.Logger;
 /**
  * @author Adrien Lecharpentier
  */
-public class HTTPRepository extends Repository {
+public class HttpRepository extends Repository {
 
-    private static final Logger log = Logger.getLogger(HTTPRepository.class.getCanonicalName());
+    private static final Logger log = Logger.getLogger(HttpRepository.class.getCanonicalName());
 
     private final String remoteLocation;
 
     @DataBoundConstructor
-    public HTTPRepository(String remoteLocation) {
+    public HttpRepository(String remoteLocation) {
         if (!remoteLocation.endsWith("/")) remoteLocation += "/";
         this.remoteLocation = remoteLocation;
     }
@@ -87,7 +87,7 @@ public class HTTPRepository extends Repository {
     }
 
     @Extension
-    public static class HTTPRepositoryDescriptor extends RepositoryDescriptor {
+    public static class HttpRepositoryDescriptor extends RepositoryDescriptor {
         @Override
         public String getDisplayName() {
             return Messages.binarydeployer_httprepository_displayName();
