@@ -54,7 +54,7 @@ public class HTTPRepository extends Repository {
     }
 
     @Extension
-    public static class HTTPDescriptor extends RepositoryDescriptor {
+    public static class HTTPRepositoryDescriptor extends RepositoryDescriptor {
         @Override
         public String getDisplayName() {
             return Messages.binarydeployer_httprepository_displayName();
