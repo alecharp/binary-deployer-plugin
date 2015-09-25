@@ -30,6 +30,7 @@ import jenkins.util.VirtualFile;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -50,7 +51,7 @@ public class HTTPRepository extends Repository {
     }
 
     @Override
-    void deploy(VirtualFile[] files) {
+    void deploy(VirtualFile[] files) throws IOException {
     }
 
     @Extension
