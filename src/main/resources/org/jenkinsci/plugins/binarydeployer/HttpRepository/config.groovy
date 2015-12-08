@@ -25,7 +25,12 @@
 package org.jenkinsci.plugins.binarydeployer.HttpRepository
 
 f = namespace(lib.FormTagLib)
+c = namespace(lib.CredentialsTagLib)
 
 f.entry(title: _("URI"), field: "remoteLocation") {
     f.textbox();
+}
+
+f.entry(title: _("Credentials"), field: "credentialsId") {
+    c.select();
 }

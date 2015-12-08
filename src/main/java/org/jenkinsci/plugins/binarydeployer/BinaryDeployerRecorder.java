@@ -29,8 +29,10 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.model.Descriptor;
-import hudson.tasks.*;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Publisher;
+import hudson.tasks.Recorder;
 import jenkins.util.VirtualFile;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -61,7 +63,7 @@ public class BinaryDeployerRecorder extends Recorder {
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
         throws InterruptedException, IOException {
-        listener.getLogger().append("Deploying files");
+        listener.getLogger().println("Deploying files");
         VirtualFile[] filesToDeploy = build.pickArtifactManager().root().list();
         if (log.isLoggable(Level.FINE)) {
             log.fine("Will deploy " + filesToDeploy.length + " files to the repository");
@@ -69,7 +71,7 @@ public class BinaryDeployerRecorder extends Recorder {
                 log.fine(virtualFile.getName());
             }
         }
-        repository.deploy(filesToDeploy);
+        repository.deploy(filesToDeploy, build);
         return true;
     }
 
