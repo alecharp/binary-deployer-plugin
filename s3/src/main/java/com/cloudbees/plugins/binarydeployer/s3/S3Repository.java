@@ -22,6 +22,9 @@
 
 package com.cloudbees.plugins.binarydeployer.s3;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.transfer.TransferManager;
 import com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl;
 import com.cloudbees.plugins.binarydeployer.core.Repository;
 import com.cloudbees.plugins.binarydeployer.core.RepositoryDescriptor;
@@ -35,6 +38,7 @@ import hudson.model.Run;
 import hudson.security.ACL;
 import hudson.util.ListBoxModel;
 import jenkins.util.VirtualFile;
+import org.apache.log4j.Logger;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -45,6 +49,8 @@ import java.util.List;
  * @author Adrien Lecharpentier
  */
 public class S3Repository extends Repository {
+    private static final Logger log = Logger.getLogger(S3Repository.class.getCanonicalName());
+
     private final String credentialsId;
     private final String bucketName;
 
@@ -64,6 +70,25 @@ public class S3Repository extends Repository {
 
     @Override
     protected void deploy(VirtualFile[] files, Run run) throws IOException {
+        log.debug("Will deploy files to S3::{}" + bucketName);
+        AWSCredentialsImpl credentials = CredentialsProvider.findCredentialById(
+            credentialsId, AWSCredentialsImpl.class, run, Lists.<DomainRequirement>newArrayList()
+        );
+
+        TransferManager transferManager = new TransferManager(credentials);
+        for (VirtualFile file : files) {
+            transferManager.upload(prepareUpload(file, file.getName()));
+        }
+    }
+
+    private PutObjectRequest prepareUpload(VirtualFile file, String name) throws IOException {
+        log.debug("Preparing upload for " + name + " to S3::" + bucketName);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.length());
+
+        return new PutObjectRequest(
+            bucketName, name, file.open(), metadata
+        );
     }
 
     @Extension
