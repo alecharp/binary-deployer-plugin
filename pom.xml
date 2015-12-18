@@ -34,7 +34,7 @@
   </parent>
 
   <artifactId>binary-deployer</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.1.1</version>
   <packaging>hpi</packaging>
 
   <inceptionYear>2015</inceptionYear>
@@ -58,7 +58,7 @@
     <connection>scm:git:git://github.com/alecharp/binary-deployer-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:alecharp/binary-deployer-plugin.git</developerConnection>
     <url>https://github.com/alecharp/binary-deployer-plugin</url>
-    <tag>HEAD</tag>
+    <tag>v0.1.1</tag>
   </scm>
 
   <properties>
