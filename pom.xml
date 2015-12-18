@@ -37,6 +37,8 @@
   <artifactId>binary-deployer</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
+
+  <inceptionYear>2015</inceptionYear>
   <name>Binary Deployer Plugin</name>
 
   <licenses>
@@ -93,4 +95,20 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <goals>install</goals>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
