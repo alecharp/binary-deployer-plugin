@@ -36,10 +36,11 @@ import java.io.IOException;
 public abstract class Repository extends AbstractDescribableImpl<Repository> {
 
     /**
-     * Deploys files to the selected (current implementation) {@see Repository}
+     * Handle the file deployment for each implementation.
      *
-     * @param files list of {@see FilePath} to deploy
-     * @param run the context in which the deploy is taking place
+     * @param files list of {@link jenkins.util.VirtualFile} to deploy
+     * @param run   the context in which the deploy is taking place
+     * @throws IOException in case of issue with the file manipulation
      */
     abstract protected void deploy(VirtualFile[] files, Run run) throws IOException;
 
