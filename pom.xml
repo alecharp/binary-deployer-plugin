@@ -23,22 +23,22 @@
   ~ THE SOFTWARE.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
     <version>1.609.1</version>
-    <relativePath />
   </parent>
 
-  <artifactId>binary-deployer</artifactId>
+  <artifactId>binary-deployer-pom</artifactId>
   <version>0.2-SNAPSHOT</version>
-  <packaging>hpi</packaging>
+  <packaging>pom</packaging>
 
   <inceptionYear>2015</inceptionYear>
-  <name>Binary Deployer Plugin</name>
+  <name>Binary Deployer: Parent</name>
 
   <licenses>
     <license>
@@ -69,18 +69,10 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>credentials</artifactId>
-      <version>1.23</version>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>core</module>
+    <module>http</module>
+  </modules>
 
   <repositories>
     <repository>
@@ -114,6 +106,14 @@
           <pushChanges>false</pushChanges>
           <localCheckout>true</localCheckout>
           <tagNameFormat>v@{project.version}</tagNameFormat>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jenkins-ci.tools</groupId>
+        <artifactId>maven-hpi-plugin</artifactId>
+        <version>1.115</version>
+        <configuration>
+          <compatibleSinceVersion>0.2</compatibleSinceVersion>
         </configuration>
       </plugin>
     </plugins>

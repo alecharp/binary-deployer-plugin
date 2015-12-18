@@ -22,8 +22,10 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.binarydeployer;
+package com.cloudbees.plugins.binarydeployer.http;
 
+import com.cloudbees.plugins.binarydeployer.core.Repository;
+import com.cloudbees.plugins.binarydeployer.core.RepositoryDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
@@ -136,7 +138,7 @@ public class HttpRepository extends Repository {
     public static class HttpRepositoryDescriptor extends RepositoryDescriptor {
         @Override
         public String getDisplayName() {
-            return Messages.binarydeployer_httprepository_displayName();
+            return Messages.binarydeployer_http_displayName();
         }
 
         public FormValidation doCheckRemoteLocation(@QueryParameter String value) {
@@ -144,7 +146,7 @@ public class HttpRepository extends Repository {
                 new URI(value);
                 return FormValidation.ok();
             } catch (URISyntaxException e) {
-                return FormValidation.error(Messages.binarydeployer_httprepository_invalidURI());
+                return FormValidation.error(Messages.binarydeployer_http_invalidURI());
             }
         }
 

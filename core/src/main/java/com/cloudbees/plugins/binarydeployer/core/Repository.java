@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.binarydeployer;
+package com.cloudbees.plugins.binarydeployer.core;
 
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Run;

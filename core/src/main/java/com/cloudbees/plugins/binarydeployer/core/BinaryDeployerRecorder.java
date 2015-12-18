@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.binarydeployer;
+package com.cloudbees.plugins.binarydeployer.core;
 
 import hudson.Extension;
 import hudson.Launcher;
@@ -88,7 +88,7 @@ public class BinaryDeployerRecorder extends Recorder {
 
         @Override
         public String getDisplayName() {
-            return Messages.binarydeployer_displayName();
+            return Messages.binarydeployer_core_displayName();
         }
 
         public List<RepositoryDescriptor> getRepositoryDescriptors() {
