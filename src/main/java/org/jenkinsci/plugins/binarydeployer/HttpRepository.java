@@ -83,7 +83,7 @@ public class HttpRepository extends Repository {
     }
 
     @Override
-    void deploy(VirtualFile[] files, Run run) throws IOException {
+    protected void deploy(VirtualFile[] files, Run run) throws IOException {
         CloseableHttpClient client = null;
         try {
             if (credentialsId == null || credentialsId.isEmpty()) {

@@ -41,7 +41,7 @@ public abstract class Repository extends AbstractDescribableImpl<Repository> {
      * @param files list of {@see FilePath} to deploy
      * @param run the context in which the deploy is taking place
      */
-    abstract void deploy(VirtualFile[] files, Run run) throws IOException;
+    abstract protected void deploy(VirtualFile[] files, Run run) throws IOException;
 
     @Override
     public RepositoryDescriptor getDescriptor() {
