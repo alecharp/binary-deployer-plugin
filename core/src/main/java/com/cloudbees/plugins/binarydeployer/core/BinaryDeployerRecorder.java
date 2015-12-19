@@ -49,10 +49,12 @@ public class BinaryDeployerRecorder extends Recorder {
     private static final Logger log = Logger.getLogger(BinaryDeployerRecorder.class.getCanonicalName());
 
     private final Repository repository;
+    private final boolean flatten;
 
     @DataBoundConstructor
-    public BinaryDeployerRecorder(Repository repository) {
+    public BinaryDeployerRecorder(Repository repository, boolean flatten) {
         this.repository = repository;
+        this.flatten = flatten;
     }
 
     @Override
@@ -77,8 +79,12 @@ public class BinaryDeployerRecorder extends Recorder {
         List<Binary> binaries = Lists.newArrayList();
         for (VirtualFile file : files) {
             if (file.isDirectory()) {
-                binaries.addAll(crossDirectories(file.list(),
-                    (parentName.isEmpty() ? parentName : parentName + "/") + file.getName())
+                binaries.addAll(crossDirectories(
+                    file.list(),
+                    flatten ?
+                        parentName :
+                        (parentName.isEmpty() ? parentName : parentName + "/") + file.getName()
+                    )
                 );
             } else {
                 log.fine("Prepare " + parentName + file.getName() + " for deployment");
@@ -90,6 +96,10 @@ public class BinaryDeployerRecorder extends Recorder {
 
     public Repository getRepository() {
         return repository;
+    }
+
+    public boolean isFlatten() {
+        return flatten;
     }
 
     @Extension
