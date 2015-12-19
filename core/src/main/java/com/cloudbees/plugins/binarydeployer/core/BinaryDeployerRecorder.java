@@ -24,6 +24,7 @@
 
 package com.cloudbees.plugins.binarydeployer.core;
 
+import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -38,7 +39,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -49,10 +49,12 @@ public class BinaryDeployerRecorder extends Recorder {
     private static final Logger log = Logger.getLogger(BinaryDeployerRecorder.class.getCanonicalName());
 
     private final Repository repository;
+    private final boolean flatten;
 
     @DataBoundConstructor
-    public BinaryDeployerRecorder(Repository repository) {
+    public BinaryDeployerRecorder(Repository repository, boolean flatten) {
         this.repository = repository;
+        this.flatten = flatten;
     }
 
     @Override
@@ -65,18 +67,39 @@ public class BinaryDeployerRecorder extends Recorder {
         throws InterruptedException, IOException {
         listener.getLogger().println("Deploying files");
         VirtualFile[] filesToDeploy = build.pickArtifactManager().root().list();
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("Will deploy " + filesToDeploy.length + " files to the repository");
-            for (VirtualFile virtualFile : filesToDeploy) {
-                log.fine(virtualFile.getName());
+        repository.deploy(crossDirectories(filesToDeploy), build);
+        return true;
+    }
+
+    private List<Binary> crossDirectories(VirtualFile[] files) throws IOException {
+        return crossDirectories(files, "");
+    }
+
+    private List<Binary> crossDirectories(VirtualFile[] files, String parentName) throws IOException {
+        List<Binary> binaries = Lists.newArrayList();
+        for (VirtualFile file : files) {
+            if (file.isDirectory()) {
+                binaries.addAll(crossDirectories(
+                    file.list(),
+                    flatten ?
+                        parentName :
+                        (parentName.isEmpty() ? parentName : parentName + "/") + file.getName()
+                    )
+                );
+            } else {
+                log.fine("Prepare " + parentName + file.getName() + " for deployment");
+                binaries.add(Binary.from(file, parentName));
             }
         }
-        repository.deploy(filesToDeploy, build);
-        return true;
+        return binaries;
     }
 
     public Repository getRepository() {
         return repository;
+    }
+
+    public boolean isFlatten() {
+        return flatten;
     }
 
     @Extension

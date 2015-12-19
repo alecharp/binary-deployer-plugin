@@ -26,6 +26,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl;
+import com.cloudbees.plugins.binarydeployer.core.Binary;
 import com.cloudbees.plugins.binarydeployer.core.Repository;
 import com.cloudbees.plugins.binarydeployer.core.RepositoryDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -69,15 +70,15 @@ public class S3Repository extends Repository {
     }
 
     @Override
-    protected void deploy(VirtualFile[] files, Run run) throws IOException {
+    protected void deploy(List<Binary> binaries, Run run) throws IOException {
         log.debug("Will deploy files to S3::{}" + bucketName);
         AWSCredentialsImpl credentials = CredentialsProvider.findCredentialById(
             credentialsId, AWSCredentialsImpl.class, run, Lists.<DomainRequirement>newArrayList()
         );
 
         TransferManager transferManager = new TransferManager(credentials);
-        for (VirtualFile file : files) {
-            transferManager.upload(prepareUpload(file, file.getName()));
+        for (Binary binary : binaries) {
+            transferManager.upload(prepareUpload(binary.getFile(), binary.getName()));
         }
     }
 

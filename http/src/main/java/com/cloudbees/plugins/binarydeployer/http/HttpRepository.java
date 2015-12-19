@@ -24,6 +24,7 @@
 
 package com.cloudbees.plugins.binarydeployer.http;
 
+import com.cloudbees.plugins.binarydeployer.core.Binary;
 import com.cloudbees.plugins.binarydeployer.core.Repository;
 import com.cloudbees.plugins.binarydeployer.core.RepositoryDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -85,7 +86,7 @@ public class HttpRepository extends Repository {
     }
 
     @Override
-    protected void deploy(VirtualFile[] files, Run run) throws IOException {
+    protected void deploy(List<Binary> binaries, Run run) throws IOException {
         CloseableHttpClient client = null;
         try {
             if (credentialsId == null || credentialsId.isEmpty()) {
@@ -105,9 +106,10 @@ public class HttpRepository extends Repository {
                     .build();
             }
 
-            for (VirtualFile file : files) {
-                BufferedHttpEntity entity = new BufferedHttpEntity(new InputStreamEntity(file.open(), file.length()));
-                HttpPost post = new HttpPost(remoteLocation + file.getName());
+            for (Binary binary : binaries) {
+                BufferedHttpEntity entity = new BufferedHttpEntity(new InputStreamEntity(binary.getFile().open(),
+                    binary.getFile().length()));
+                HttpPost post = new HttpPost(remoteLocation + binary.getName());
                 post.setEntity(entity);
 
                 CloseableHttpResponse response = null;
@@ -115,9 +117,9 @@ public class HttpRepository extends Repository {
                     response = client.execute(post);
                     int statusCode = response.getStatusLine().getStatusCode();
                     if (statusCode >= 200 && statusCode < 300) {
-                        log.fine("Deployed " + file.getName() + " to " + remoteLocation);
+                        log.fine("Deployed " + binary.getName() + " to " + remoteLocation);
                     } else {
-                        log.warning("Cannot deploy file " + file.getName() + ". Response from target was " + statusCode);
+                        log.warning("Cannot deploy file " + binary.getName() + ". Response from target was " + statusCode);
                         run.setResult(Result.FAILURE);
                         throw new IOException(response.getStatusLine().toString());
                     }

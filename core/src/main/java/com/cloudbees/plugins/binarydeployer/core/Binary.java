@@ -1,7 +1,5 @@
 /*
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Adrien Lecharpentier
+ * Copyright (c) 2015 CloudBees, Inc
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +22,41 @@
 
 package com.cloudbees.plugins.binarydeployer.core;
 
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.Run;
 import jenkins.util.VirtualFile;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
+ * Represents the file to upload along with their name.
+ * <p/>
+ * This enable to have a list of files, without any directories, to pass to the deploy implementations.
+ *
  * @author Adrien Lecharpentier
  */
-public abstract class Repository extends AbstractDescribableImpl<Repository> {
+public class Binary {
+    private final VirtualFile file;
+    private final String name;
 
-    /**
-     * Handle the file deployment for each implementation.
-     *
-     * @param binaries list of {@link Binary} to deploy
-     * @param run   the context in which the deploy is taking place
-     * @throws IOException in case of issue with the file manipulation
-     */
-    abstract protected void deploy(List<Binary> binaries, Run run) throws IOException;
+    private Binary(VirtualFile file, String name) {
+        this.file = file;
+        this.name = name;
+    }
 
-    @Override
-    public RepositoryDescriptor getDescriptor() {
-        return (RepositoryDescriptor) super.getDescriptor();
+    public VirtualFile getFile() {
+        return file;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static Binary from(VirtualFile file) {
+        return new Binary(file, file.getName());
+    }
+
+    public static Binary from(VirtualFile file, String parent) {
+        if (parent == null) {
+            throw new IllegalArgumentException("Parent shouldn't be null");
+        }
+        if (!parent.isEmpty() && !parent.endsWith("/")) parent += "/";
+        return new Binary(file, parent + file.getName());
     }
 }
