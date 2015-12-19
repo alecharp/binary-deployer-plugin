@@ -29,6 +29,7 @@ import hudson.model.Run;
 import jenkins.util.VirtualFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Adrien Lecharpentier
@@ -38,11 +39,11 @@ public abstract class Repository extends AbstractDescribableImpl<Repository> {
     /**
      * Handle the file deployment for each implementation.
      *
-     * @param files list of {@link jenkins.util.VirtualFile} to deploy
+     * @param binaries list of {@link Binary} to deploy
      * @param run   the context in which the deploy is taking place
      * @throws IOException in case of issue with the file manipulation
      */
-    abstract protected void deploy(VirtualFile[] files, Run run) throws IOException;
+    abstract protected void deploy(List<Binary> binaries, Run run) throws IOException;
 
     @Override
     public RepositoryDescriptor getDescriptor() {
