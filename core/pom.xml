@@ -36,6 +36,5 @@
   <artifactId>binary-deployer-core</artifactId>
   <packaging>hpi</packaging>
 
-  <inceptionYear>2015</inceptionYear>
   <name>Binary Deployer: Core</name>
 </project>
