@@ -26,8 +26,9 @@ import jenkins.util.VirtualFile;
 
 /**
  * Represents the file to upload along with their name.
- * <p/>
+ * <p>
  * This enable to have a list of files, without any directories, to pass to the deploy implementations.
+ * </p>
  *
  * @author Adrien Lecharpentier
  */
