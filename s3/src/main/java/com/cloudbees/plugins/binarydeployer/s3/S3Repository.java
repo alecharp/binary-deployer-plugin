@@ -22,21 +22,21 @@
 
 package com.cloudbees.plugins.binarydeployer.s3;
 
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl;
 import com.cloudbees.plugins.binarydeployer.core.Binary;
 import com.cloudbees.plugins.binarydeployer.core.Repository;
 import com.cloudbees.plugins.binarydeployer.core.RepositoryDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.ItemGroup;
 import hudson.model.Run;
-import hudson.security.ACL;
 import hudson.util.ListBoxModel;
 import jenkins.util.VirtualFile;
 import org.apache.log4j.Logger;
@@ -73,10 +73,12 @@ public class S3Repository extends Repository {
     protected void deploy(List<Binary> binaries, Run run) throws IOException {
         log.debug("Will deploy files to S3::{}" + bucketName);
         AWSCredentialsImpl credentials = CredentialsProvider.findCredentialById(
-            credentialsId, AWSCredentialsImpl.class, run, Lists.<DomainRequirement>newArrayList()
+            credentialsId, AWSCredentialsImpl.class, run, Lists.newArrayList()
         );
 
-        TransferManager transferManager = new TransferManager(credentials);
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(
+            AmazonS3ClientBuilder.standard().withCredentials(credentials).build()
+        ).build();
         for (Binary binary : binaries) {
             transferManager.upload(prepareUpload(binary.getFile(), binary.getName()));
         }
@@ -94,17 +96,13 @@ public class S3Repository extends Repository {
 
     @Extension
     public static class DescriptorImpl extends RepositoryDescriptor {
-
         @Override
         public String getDisplayName() {
             return Messages.binarydeployer_s3_displayName();
         }
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup context) {
-            List<AWSCredentialsImpl> credentials = CredentialsProvider.lookupCredentials(
-                AWSCredentialsImpl.class, context, ACL.SYSTEM, Lists.<DomainRequirement>newArrayList()
-            );
-            return new StandardListBoxModel().withEmptySelection().withAll(credentials);
+            return new StandardListBoxModel().includeEmptyValue().include(context, AWSCredentialsImpl.class);
         }
     }
 }

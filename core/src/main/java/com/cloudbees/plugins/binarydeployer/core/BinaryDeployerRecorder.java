@@ -37,6 +37,7 @@ import hudson.tasks.Recorder;
 import jenkins.util.VirtualFile;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -109,7 +110,7 @@ public class BinaryDeployerRecorder extends Recorder {
             return true;
         }
 
-        @Override
+        @Override @Nonnull
         public String getDisplayName() {
             return Messages.binarydeployer_core_displayName();
         }
