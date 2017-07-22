@@ -26,7 +26,6 @@ package com.cloudbees.plugins.binarydeployer.core;
 
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Run;
-import jenkins.util.VirtualFile;
 
 import java.io.IOException;
 import java.util.List;
