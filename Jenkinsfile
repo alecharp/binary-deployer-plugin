@@ -23,6 +23,10 @@
 pipeline {
   agent { docker 'alecharp/maven-build-tools' }
 
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+  }
+
   stages {
     stage('Build') {
       steps {
