@@ -32,6 +32,7 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.common.collect.Lists;
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
@@ -94,6 +95,9 @@ public class HttpRepository extends Repository {
                 BasicCredentialsProvider credentials = new BasicCredentialsProvider();
                 StandardUsernamePasswordCredentials credentialById = CredentialsProvider.findCredentialById(credentialsId,
                     StandardUsernamePasswordCredentials.class, run, Lists.<DomainRequirement>newArrayList());
+                if (credentialById == null) {
+                    throw new AbortException("Cannot find credentials configured in job.");
+                }
                 credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(
                     credentialById.getUsername(), credentialById.getPassword().getPlainText()
                 ));
