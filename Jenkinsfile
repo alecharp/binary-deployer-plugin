@@ -21,7 +21,7 @@
  */
 
 pipeline {
-  agent { docker 'alecharp/maven-build-tools' }
+  agent { docker 'alecharp/maven-build-tools-alpine' }
 
   options {
     buildDiscarder(logRotator(numToKeepStr: '10'))
@@ -34,9 +34,11 @@ pipeline {
       }
 
       post {
+        always {
+          junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
+        }
         success {
           archiveArtifacts allowEmptyArchive: true, artifacts: '**/target/*.jar, **/target/*.hpi', onlyIfSuccessful: true
-          junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
         }
       }
     }
